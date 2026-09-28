@@ -133,12 +133,12 @@ PROFILES: dict[str, Profile] = {
         display_name="Astra → Luna",
         main_model="gpt-6-astra",
         main_effort="medium",
-        default_model="gpt-5.6-luna",
+        default_model="gpt-6-luna",
         default_effort="max",
         tier_models={
             "T1": ("openai", "gpt-6-astra", ("low", "medium", "high", "max")),
-            "T2": ("openai", "gpt-5.6-luna", ("low", "medium", "high", "xhigh", "max")),
-            "T3": ("openai", "gpt-5.6-luna", ("low", "medium", "high", "xhigh", "max")),
+            "T2": ("openai", "gpt-6-luna", ("low", "medium", "high", "xhigh", "max")),
+            "T3": ("openai", "gpt-6-luna", ("low", "medium", "high", "xhigh", "max")),
         },
         role_bindings={
             "main": ("T1", "medium"),
@@ -157,12 +157,12 @@ PROFILES: dict[str, Profile] = {
         display_name="legacy Sol → Luna",
         main_model="gpt-5.6-sol",
         main_effort="max",
-        default_model="gpt-5.6-luna",
+        default_model="gpt-6-luna",
         default_effort="max",
         tier_models={
             "T1": ("openai", "gpt-5.6-sol", ("low", "medium", "high", "max")),
-            "T2": ("openai", "gpt-5.6-luna", ("low", "medium", "high", "xhigh", "max")),
-            "T3": ("openai", "gpt-5.6-luna", ("low", "medium", "high", "xhigh", "max")),
+            "T2": ("openai", "gpt-6-luna", ("low", "medium", "high", "xhigh", "max")),
+            "T3": ("openai", "gpt-6-luna", ("low", "medium", "high", "xhigh", "max")),
         },
         role_bindings={
             "main": ("T1", "max"),

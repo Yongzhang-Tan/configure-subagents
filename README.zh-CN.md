@@ -6,8 +6,8 @@
 默认配置为：
 
 - T1/main：`gpt-6-astra`，medium 推理强度。
-- T2/default、mapper、implementation worker：`gpt-5.6-luna`，max。
-- T3/routine state checker：`gpt-5.6-luna`，max。
+- T2/default、mapper、implementation worker：`gpt-6-luna`，max。
+- T3/routine state checker：`gpt-6-luna`，max。
 - `implementation_worker` 是唯一可写角色；mapper 和 routine checker 只读。
 
 模型 registry 只选择 provider/model 和可用推理强度；sandbox、指令和权限仍由各

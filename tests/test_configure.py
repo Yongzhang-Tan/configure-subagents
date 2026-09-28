@@ -44,7 +44,7 @@ class ConfigureScriptTests(unittest.TestCase):
             result = self.run_tool(home, "preview")
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn("gpt-6-astra / medium", result.stdout)
-            self.assertIn("gpt-5.6-luna / max", result.stdout)
+            self.assertIn("gpt-6-luna / max", result.stdout)
             self.assertIn("no files were written", result.stdout)
             self.assertFalse(home.exists())
 
@@ -132,7 +132,7 @@ class ConfigureScriptTests(unittest.TestCase):
             self.assertEqual(first.returncode, 0, first.stderr)
             registry = home / "model-tiers.toml"
             original = registry.read_text(encoding="utf-8")
-            registry.write_text(original.replace("gpt-5.6-luna", "custom-luna"), encoding="utf-8")
+            registry.write_text(original.replace("gpt-6-luna", "custom-luna"), encoding="utf-8")
             synced = self.run_tool(home, "sync", "--yes")
             self.assertEqual(synced.returncode, 0, synced.stderr)
             self.assertEqual(registry.read_text(encoding="utf-8").count("custom-luna"), 2)

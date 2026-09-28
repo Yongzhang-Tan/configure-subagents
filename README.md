@@ -6,8 +6,8 @@ This repository ships an explicit-only Codex skill and a small, portable
 global configurator. The default profile is:
 
 - T1/main: `gpt-6-astra`, medium effort.
-- T2/default, mapper, and implementation worker: `gpt-5.6-luna`, max effort.
-- T3/routine state checker: `gpt-5.6-luna`, max effort.
+- T2/default, mapper, and implementation worker: `gpt-6-luna`, max effort.
+- T3/routine state checker: `gpt-6-luna`, max effort.
 - `implementation_worker` is the only write-capable role; mapper and routine
   checker are read-only.
 

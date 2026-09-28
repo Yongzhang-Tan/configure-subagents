@@ -11,12 +11,12 @@ supported_efforts = ["low", "medium", "high", "max"]
 [tiers.T2]
 enabled = true
 model_provider = "openai"
-model = "gpt-5.6-luna"
+model = "gpt-6-luna"
 supported_efforts = ["low", "medium", "high", "xhigh", "max"]
 
 [tiers.T3]
 enabled = true
 model_provider = "openai"
-model = "gpt-5.6-luna"
+model = "gpt-6-luna"
 supported_efforts = ["low", "medium", "high", "xhigh", "max"]
 # END MANAGED: configure-sol-luna-subagents:model-tiers

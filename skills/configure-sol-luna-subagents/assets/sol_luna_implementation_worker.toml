@@ -1,7 +1,7 @@
 # BEGIN MANAGED: configure-sol-luna-subagents:sol_luna_implementation_worker
 name = "sol_luna_implementation_worker"
 description = "Sole Luna workspace writer for one exact delegated local implementation and verification task."
-model = "gpt-5.6-luna"
+model = "gpt-6-luna"
 model_reasoning_effort = "max"
 sandbox_mode = "workspace-write"
 

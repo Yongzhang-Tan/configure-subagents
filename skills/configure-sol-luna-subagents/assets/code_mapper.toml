@@ -1,7 +1,7 @@
 # BEGIN MANAGED: configure-sol-luna-subagents:code_mapper
 name = "code_mapper"
 description = "Read-only mapper for non-trivial local code, configuration, and test discovery."
-model = "gpt-5.6-luna"
+model = "gpt-6-luna"
 model_reasoning_effort = "max"
 sandbox_mode = "read-only"
 
