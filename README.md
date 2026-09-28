@@ -26,15 +26,15 @@ test and does not prove access or billing availability.
 
 The existing shareable URL and skill entry remain valid:
 
-`https://github.com/Yongzhang-Tan/configure-sol-luna-subagents/tree/main/skills/configure-sol-luna-subagents`
+`https://github.com/Yongzhang-Tan/configure-subagents/tree/main/skills/configure-sol-luna-subagents`
 
 One-message entry point:
 
-`$skill-installer Install <https://github.com/Yongzhang-Tan/configure-sol-luna-subagents/tree/main/skills/configure-sol-luna-subagents> and then use $configure-sol-luna-subagents.`
+`$skill-installer Install <https://github.com/Yongzhang-Tan/configure-subagents/tree/main/skills/configure-sol-luna-subagents> and then use $configure-sol-luna-subagents.`
 
 Or use the standard two-step flow:
 
-1. `$skill-installer Install <https://github.com/Yongzhang-Tan/configure-sol-luna-subagents/tree/main/skills/configure-sol-luna-subagents>`
+1. `$skill-installer Install <https://github.com/Yongzhang-Tan/configure-subagents/tree/main/skills/configure-sol-luna-subagents>`
 2. `$configure-sol-luna-subagents`
 
 The skill remains explicit-only. Installing the skill stores its files under

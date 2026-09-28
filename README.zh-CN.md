@@ -22,15 +22,15 @@ agent TOML 独立定义。安装器保留无关配置、角色、provider 定义
 
 现有可分享 URL 和 skill 入口保持不变：
 
-`https://github.com/Yongzhang-Tan/configure-sol-luna-subagents/tree/main/skills/configure-sol-luna-subagents`
+`https://github.com/Yongzhang-Tan/configure-subagents/tree/main/skills/configure-sol-luna-subagents`
 
 一句话入口：
 
-`$skill-installer 从 <https://github.com/Yongzhang-Tan/configure-sol-luna-subagents/tree/main/skills/configure-sol-luna-subagents> 安装，然后使用 $configure-sol-luna-subagents。`
+`$skill-installer 从 <https://github.com/Yongzhang-Tan/configure-subagents/tree/main/skills/configure-sol-luna-subagents> 安装，然后使用 $configure-sol-luna-subagents。`
 
 也可以使用标准两步流程：
 
-1. `$skill-installer 安装 <https://github.com/Yongzhang-Tan/configure-sol-luna-subagents/tree/main/skills/configure-sol-luna-subagents>`
+1. `$skill-installer 安装 <https://github.com/Yongzhang-Tan/configure-subagents/tree/main/skills/configure-sol-luna-subagents>`
 2. `$configure-sol-luna-subagents`
 
 skill 仍然是显式调用；安装会把 skill 文件放入客户端的 skill 位置，但不会应用
