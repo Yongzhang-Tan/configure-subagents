@@ -55,7 +55,8 @@ python scripts/configure.py verify
 确认前只显示精确的 `CODEX_HOME`、解析后的 model/effort/provider、sandbox 和目标
 文件名，不显示原始配置内容。
 
-每次 apply 或 sync 都会创建按文件限定的 UTC 备份。回滚必须显式指定：
+每次 apply 或 sync 都会创建按文件限定的 UTC 备份。`apply` 会把 managed 基线重置为
+包内最新 profile 并重新物化；`sync` 会保留 registry 中已有的自定义修改。回滚必须显式指定：
 
 ```bash
 python scripts/configure.py rollback --backup ~/.codex/backups/configure-sol-luna-subagents/<UTC-timestamp>
@@ -65,9 +66,9 @@ python scripts/configure.py rollback --backup ~/.codex/backups/configure-sol-lun
 
 ## Registry 与同步
 
-安装会创建带 managed block 的 `model-tiers.toml` 和 `agent-tiers.toml`。已有 registry
-不会被盲目覆盖；未管理的冲突、无效 TOML、缺失 marker 或角色文件歧义都会在写入前停止。
-无关 tier 和 role 会保留。
+安装会创建带 managed block 的 `model-tiers.toml` 和 `agent-tiers.toml`。`apply` 只重置
+managed block，并按包内最新 profile 重新物化 managed agent/config；未管理的冲突、无效
+TOML、缺失 marker 或角色文件歧义都会在写入前停止。无关 tier、role 和 config 会保留。
 
 可以编辑 bundle 中的 tier 文件。修改 managed tier 的 model 或 effort 后，先检查再同步：
 
@@ -79,6 +80,8 @@ python scripts/configure.py verify
 ```
 
 `sync` 从 registry 读取 model/effort 并物化到全局 config 和 managed agent，不重写 registry。
+如果要保留主动设置的自定义模型，请使用 `sync`；之后再次 `apply` 会把 managed tier
+重置为当前包内的最新默认值。
 实际使用的 tier provider 必须与主线程的有效 provider 一致；既有 provider 定义和凭据
 不会被修改。
 

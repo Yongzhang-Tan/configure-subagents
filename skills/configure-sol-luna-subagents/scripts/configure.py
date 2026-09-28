@@ -589,6 +589,8 @@ def _registry_after(
     end: str,
     target_names: Iterable[str],
     label: str,
+    *,
+    reset_managed: bool = False,
 ) -> tuple[str, str]:
     existed, before = _read_optional_text(path)
     if not existed:
@@ -614,7 +616,7 @@ def _registry_after(
     desired_match = PROFILE_RE.search(desired)
     if match is None or desired_match is None:
         raise ConfigureError(f"managed registry profile is missing in {path.name}")
-    if match.group(1) == desired_match.group(1):
+    if match.group(1) == desired_match.group(1) and not reset_managed:
         # Existing managed values are the editable source of truth.
         return before, before
     return before, _replace_marked_block(before, begin, end, desired)
@@ -806,6 +808,7 @@ def _build_plan(home: Path, profile: Profile, *, sync_only: bool = False) -> Pla
             MODEL_END,
             profile.tier_models,
             MODEL_TIERS_NAME,
+            reset_managed=True,
         )
         role_before, role_after = _registry_after(
             role_path,
@@ -814,6 +817,7 @@ def _build_plan(home: Path, profile: Profile, *, sync_only: bool = False) -> Pla
             ROLES_END,
             profile.role_bindings,
             ROLE_BINDINGS_NAME,
+            reset_managed=True,
         )
     state = _registry_state(model_after, role_after, profile)
     _validate_provider_bindings(state, profile.role_bindings)

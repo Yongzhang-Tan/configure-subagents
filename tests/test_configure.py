@@ -146,6 +146,47 @@ class ConfigureScriptTests(unittest.TestCase):
             )
             self.assertEqual(self.run_tool(home, "tiers", "check").returncode, 0)
 
+    def test_default_apply_resets_managed_registry_to_bundled_baseline(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory)
+            first = self.apply(home)
+            self.assertEqual(first.returncode, 0, first.stderr)
+            model_registry = home / "model-tiers.toml"
+            role_registry = home / "agent-tiers.toml"
+            model_registry.write_text(
+                model_registry.read_text(encoding="utf-8").replace(
+                    'model = "gpt-6-luna"', 'model = "custom-luna"'
+                )
+                + '\n[tiers.unmanaged]\nenabled = true\nmodel_provider = "openai"\n'
+                + 'model = "keep-me"\nsupported_efforts = ["max"]\n',
+                encoding="utf-8",
+            )
+            role_registry.write_text(
+                role_registry.read_text(encoding="utf-8").replace(
+                    'effort = "max"', 'effort = "high"', 1
+                ),
+                encoding="utf-8",
+            )
+
+            preview = self.run_tool(home, "preview")
+            self.assertEqual(preview.returncode, 0, preview.stderr)
+            self.assertIn("gpt-6-luna / max", preview.stdout)
+            self.assertIn("would change:", preview.stdout)
+            self.assertIn("custom-luna", model_registry.read_text(encoding="utf-8"))
+
+            reapplied = self.apply(home)
+            self.assertEqual(reapplied.returncode, 0, reapplied.stderr)
+            model_text = model_registry.read_text(encoding="utf-8")
+            role_text = role_registry.read_text(encoding="utf-8")
+            self.assertNotIn("custom-luna", model_text)
+            self.assertIn('model = "gpt-6-luna"', model_text)
+            self.assertIn('model = "keep-me"', model_text)
+            self.assertIn('effort = "max"', role_text)
+            self.assertIn(
+                'default_subagent_model = "gpt-6-luna"',
+                (home / "config.toml").read_text(encoding="utf-8"),
+            )
+
     def test_unmanaged_tier_registry_collision_aborts_without_mutation(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             home = Path(directory)
@@ -222,6 +263,37 @@ class ConfigureScriptTests(unittest.TestCase):
             manifest = json.loads((Path(backup) / "manifest.json").read_text(encoding="utf-8"))
             self.assertEqual(manifest["schema"], 2)
             self.assertEqual(manifest["codex_home"], str(home.resolve()))
+
+    def test_reset_backup_rollback_restores_custom_registry_and_materialization(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory)
+            self.assertEqual(self.apply(home).returncode, 0)
+            registry = home / "model-tiers.toml"
+            registry.write_text(
+                registry.read_text(encoding="utf-8").replace(
+                    'model = "gpt-6-luna"', 'model = "custom-luna"'
+                ),
+                encoding="utf-8",
+            )
+            self.assertEqual(self.run_tool(home, "sync", "--yes").returncode, 0)
+            before = {
+                path: path.read_bytes()
+                for path in (
+                    home / "config.toml",
+                    home / "model-tiers.toml",
+                    home / "agents" / "code_mapper.toml",
+                )
+            }
+            reset = self.apply(home)
+            self.assertEqual(reset.returncode, 0, reset.stderr)
+            backup = self.backup_from(reset)
+            self.assertNotIn(
+                "custom-luna", (home / "config.toml").read_text(encoding="utf-8")
+            )
+            rolled = self.run_tool(home, "rollback", "--backup", backup)
+            self.assertEqual(rolled.returncode, 0, rolled.stderr)
+            for path, content in before.items():
+                self.assertEqual(path.read_bytes(), content)
 
     def test_non_empty_override_is_active_instruction_file(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
