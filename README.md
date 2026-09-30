@@ -6,8 +6,8 @@ This repository ships an explicit-only Codex skill and a small, portable
 global configurator. The default profile is:
 
 - T1/main: `gpt-6-astra`, medium effort.
-- T2/default, mapper, and implementation worker: `gpt-5.6-luna`, max effort.
-- T3/routine state checker: `gpt-5.6-luna`, max effort.
+- T2/default, mapper, and implementation worker: `gpt-6-luna`, max effort.
+- T3/routine state checker: `gpt-6-luna`, max effort.
 - `implementation_worker` is the only write-capable role; mapper and routine
   checker are read-only.
 
@@ -26,15 +26,15 @@ test and does not prove access or billing availability.
 
 The existing shareable URL and skill entry remain valid:
 
-`https://github.com/Yongzhang-Tan/configure-sol-luna-subagents/tree/main/skills/configure-sol-luna-subagents`
+`https://github.com/Yongzhang-Tan/configure-subagents/tree/main/skills/configure-sol-luna-subagents`
 
 One-message entry point:
 
-`$skill-installer Install <https://github.com/Yongzhang-Tan/configure-sol-luna-subagents/tree/main/skills/configure-sol-luna-subagents> and then use $configure-sol-luna-subagents.`
+`$skill-installer Install <https://github.com/Yongzhang-Tan/configure-subagents/tree/main/skills/configure-sol-luna-subagents> and then use $configure-sol-luna-subagents.`
 
 Or use the standard two-step flow:
 
-1. `$skill-installer Install <https://github.com/Yongzhang-Tan/configure-sol-luna-subagents/tree/main/skills/configure-sol-luna-subagents>`
+1. `$skill-installer Install <https://github.com/Yongzhang-Tan/configure-subagents/tree/main/skills/configure-sol-luna-subagents>`
 2. `$configure-sol-luna-subagents`
 
 The skill remains explicit-only. Installing the skill stores its files under
@@ -62,7 +62,9 @@ interactive confirmation; in a non-interactive process it fails closed. Immediat
 preview prints only the exact `CODEX_HOME`, resolved model/effort/provider
 values, sandbox modes, and target filenames; it does not print raw config.
 
-Every apply or sync creates a file-scoped UTC backup. Rollback is explicit:
+Every apply or sync creates a file-scoped UTC backup. `apply` resets the
+managed baseline to the bundled latest profile; `sync` preserves any edits
+already made in the registries. Rollback is explicit:
 
 ```bash
 python scripts/configure.py rollback --backup ~/.codex/backups/configure-sol-luna-subagents/<UTC-timestamp>
@@ -74,9 +76,10 @@ files. Review the backup path before using it.
 ## Registries and synchronization
 
 An installation creates portable `model-tiers.toml` and `agent-tiers.toml`
-with managed blocks. Existing registries are never overwritten blindly:
+with managed blocks. `apply` replaces only those managed blocks and
+re-materializes the managed agents/config from the bundled latest profile;
 unmanaged collisions, malformed TOML, missing markers, and ambiguous role
-files stop before any write. Unrelated tiers and roles are retained.
+files stop before any write. Unrelated tiers, roles, and config remain.
 
 The bundled tier files are editable. After changing a managed tier's model or
 effort, inspect the result and run:
@@ -90,6 +93,9 @@ python scripts/configure.py verify
 
 `sync` reads the registries and materializes their model/effort values into
 the global config and managed agents; it does not rewrite the registries.
+Use `sync` when you intentionally want to keep a custom model tier. A later
+`apply` is the managed-baseline reinstall and will reset that managed tier to
+the current bundled default.
 Used tier providers must agree with the effective main provider. Existing
 provider definitions and credentials are never changed.
 

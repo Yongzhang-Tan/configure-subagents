@@ -49,11 +49,11 @@ only test configuration parsing; they are not a paid live model smoke test.
    ordinary dialogue. `--yes` is valid only after that approval for the exact
    displayed plan; it is not a substitute for approval. Non-interactive apply
    without `--yes` fails closed.
-4. The script creates a UTC, file-scoped backup, performs line-aware updates,
-   validates the managed registry/config/agents, and rolls back that backup if
-   validation fails. It rejects invalid TOML, unmanaged collisions, malformed
-   markers, provider mismatches, and ambiguous canonical/compatibility role
-   files before writing.
+4. The script creates a UTC, file-scoped backup, resets only the managed
+   registry blocks and managed role materialization for `apply`, validates the
+   resulting config/agents, and rolls back that backup if validation fails. It
+   rejects invalid TOML, unmanaged collisions, malformed markers, provider
+   mismatches, and ambiguous canonical/compatibility role files before writing.
 5. Run `python scripts/configure.py verify`. This is static validation only;
    it does not start a model task. Start a new Codex session or restart the
    client so the loaded configuration is refreshed.
@@ -72,9 +72,10 @@ python scripts/configure.py rollback --backup <backup-path>
 ```
 
 `sync` reads editable registries and materializes their model/effort values
-into native config and managed agents without rewriting the registries. Used
-tier providers must agree with the effective main provider; provider
-definitions and credentials are never changed.
+into native config and managed agents without rewriting the registries. Use
+`sync` to retain intentional custom tier edits; a later `apply` reinstalls the
+bundled latest managed baseline. Used tier providers must agree with the
+effective main provider; provider definitions and credentials are never changed.
 
 ## Native and role contract
 
