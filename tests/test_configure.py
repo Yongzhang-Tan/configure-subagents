@@ -146,6 +146,45 @@ class ConfigureScriptTests(unittest.TestCase):
             )
             self.assertEqual(self.run_tool(home, "tiers", "check").returncode, 0)
 
+    def test_sync_preserves_custom_astra_luna_models_and_efforts(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory)
+            applied = self.apply(home)
+            self.assertEqual(applied.returncode, 0, applied.stderr)
+            models = home / "model-tiers.toml"
+            bindings = home / "agent-tiers.toml"
+            models.write_text(
+                models.read_text(encoding="utf-8")
+                .replace("gpt-6-astra", "custom-astra")
+                .replace("gpt-6-luna", "custom-luna"),
+                encoding="utf-8",
+            )
+            bindings.write_text(
+                bindings.read_text(encoding="utf-8")
+                .replace('effort = "medium"', 'effort = "high"')
+                .replace('effort = "max"', 'effort = "low"'),
+                encoding="utf-8",
+            )
+            registries_before = (models.read_bytes(), bindings.read_bytes())
+            for arguments in (("tiers", "list"), ("tiers", "check"), ("sync", "--yes"), ("verify",)):
+                result = self.run_tool(home, *arguments)
+                self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual((models.read_bytes(), bindings.read_bytes()), registries_before)
+            config = (home / "config.toml").read_text(encoding="utf-8")
+            self.assertIn('model = "custom-astra"', config)
+            self.assertIn('model_reasoning_effort = "high"', config)
+            self.assertIn('default_subagent_model = "custom-luna"', config)
+            self.assertIn('default_subagent_reasoning_effort = "low"', config)
+            for role, sandbox in (
+                ("code_mapper", "read-only"),
+                ("implementation_worker", "workspace-write"),
+                ("routine_state_checker", "read-only"),
+            ):
+                agent = (home / "agents" / f"{role}.toml").read_text(encoding="utf-8")
+                self.assertIn('model = "custom-luna"', agent)
+                self.assertIn('model_reasoning_effort = "low"', agent)
+                self.assertIn(f'sandbox_mode = "{sandbox}"', agent)
+
     def test_default_apply_resets_managed_registry_to_bundled_baseline(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             home = Path(directory)
